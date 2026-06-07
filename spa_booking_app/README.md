@@ -1,17 +1,2 @@
 # spa_booking_app
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Đồ án xây dựng một ứng dụng đặt lịch dịch vụ spa trên thiết bị di động. Người dùng có thể xem danh sách dịch vụ, lọc theo danh mục, xem thông tin dịch vụ, đặt lịch, xem lịch hẹn và quản lý hồ sơ cá nhân. Giao diện mẫu trong video có phong cách hiện đại, tông tím/trắng, gồm các màn hình chính: Trang chủ, Dịch vụ, Lịch hẹn và Hồ sơ

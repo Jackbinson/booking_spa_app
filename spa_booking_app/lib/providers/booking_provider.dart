@@ -33,6 +33,15 @@ class BookingProvider extends ChangeNotifier {
 
   List<Appointment> get appointments => List.unmodifiable(_appointments);
 
+  /// Lịch hẹn sắp tới (pending / confirmed) — dùng cho HomeScreen
+  List<Appointment> get upcomingAppointments => _appointments
+      .where(
+        (a) =>
+            a.status == AppointmentStatus.pending ||
+            a.status == AppointmentStatus.confirmed,
+      )
+      .toList();
+
   int get currentTabIndex => _currentTabIndex;
 
   void setCurrentTab(int index) {

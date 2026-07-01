@@ -24,7 +24,7 @@ class _AuthGateState extends State<AuthGate> {
   @override
   void initState() {
     super.initState();
-    widget.authProvider.initialize();
+    _initializeAfterBuild();
   }
 
   @override
@@ -32,8 +32,15 @@ class _AuthGateState extends State<AuthGate> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.authProvider != widget.authProvider) {
-      widget.authProvider.initialize();
+      _initializeAfterBuild();
     }
+  }
+
+  void _initializeAfterBuild() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      widget.authProvider.initialize();
+    });
   }
 
   @override

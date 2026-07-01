@@ -351,7 +351,7 @@ class _SelectedService extends StatelessWidget {
               width: 82,
               height: 82,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
+              errorBuilder: (context, error, stackTrace) => Container(
                 width: 82,
                 height: 82,
                 color: AppColors.secondary,

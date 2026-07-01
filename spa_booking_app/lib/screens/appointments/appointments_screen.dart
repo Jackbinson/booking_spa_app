@@ -46,7 +46,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: _tabs.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 10),
+                      separatorBuilder: (_, index) => const SizedBox(width: 10),
                       itemBuilder: (context, index) {
                         return CategoryChip(
                           label: _tabs[index],
@@ -66,7 +66,8 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                   : ListView.separated(
                       padding: const EdgeInsets.fromLTRB(18, 0, 18, 24),
                       itemCount: appointments.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 14),
+                      separatorBuilder: (_, index) =>
+                          const SizedBox(height: 14),
                       itemBuilder: (context, index) {
                         final appointment = appointments[index];
                         return AppointmentCard(

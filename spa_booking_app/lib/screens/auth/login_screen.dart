@@ -1,13 +1,18 @@
+// Thư viện Material cung cấp form, input, button và navigation.
 import 'package:flutter/material.dart';
+// Provider dùng để đọc/gọi AuthProvider trong màn đăng nhập.
 import 'package:provider/provider.dart';
 
+// Import asset, style, widget dùng chung, provider và màn đăng ký.
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text_styles.dart';
+import '../../core/network/api_client.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../providers/auth_provider.dart';
 import 'register_screen.dart';
 
+// Màn hình đăng nhập, lưu state của form và trạng thái ẩn/hiện mật khẩu.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -22,6 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _hidePassword = true;
 
   @override
+  // Hủy controller khi rời màn để tránh rò rỉ tài nguyên.
   void dispose() {
     _accountController.dispose();
     _passwordController.dispose();
@@ -29,6 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  // build dựng phần giao diện của widget trong màn đăng nhập.
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
 
@@ -48,6 +55,8 @@ class _LoginScreenState extends State<LoginScreen> {
               'Đăng nhập để đặt lịch và quản lý lịch hẹn tại Lavender Spa.',
               style: AppTextStyles.muted,
             ),
+            const SizedBox(height: 8),
+            const _ApiEndpointNote(),
             const SizedBox(height: 28),
             Form(
               key: _formKey,
@@ -118,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 8),
             PrimaryButton(
-              label: auth.isLoading ? 'Đang đăng nhập...' : 'Đăng nhập',
+              label: auth.isLoading ? 'Đang xử lý...' : 'Đăng nhập',
               icon: Icons.login,
               onPressed: auth.isLoading ? null : _submit,
             ),
@@ -147,6 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  // Validate form rồi gọi AuthProvider.login; nếu thất bại thì hiện SnackBar.
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -170,10 +180,25 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+// Hiển thị backend URL hiện tại để dễ kiểm tra app đang gọi đúng API.
+class _ApiEndpointNote extends StatelessWidget {
+  const _ApiEndpointNote();
+
+  @override
+  Widget build(BuildContext context) {
+    return SelectableText(
+      'API: ${ApiClient.instance.baseUrl}/auth/login',
+      style: AppTextStyles.muted.copyWith(fontSize: 12),
+    );
+  }
+}
+
+// Ảnh hero đầu màn đăng nhập, có fallback icon khi asset lỗi.
 class _AuthHero extends StatelessWidget {
   const _AuthHero();
 
   @override
+  // build dựng phần giao diện của widget trong màn đăng nhập.
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(

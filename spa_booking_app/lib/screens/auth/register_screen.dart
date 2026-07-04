@@ -1,11 +1,16 @@
+// Thư viện Material cung cấp form, input, checkbox và navigation.
 import 'package:flutter/material.dart';
+// Provider dùng để gọi AuthProvider khi tạo tài khoản.
 import 'package:provider/provider.dart';
 
+// Import màu, kiểu chữ, nút chính và provider đăng ký.
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text_styles.dart';
+import '../../core/network/api_client.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../providers/auth_provider.dart';
 
+// Màn hình đăng ký, quản lý các controller nhập liệu và checkbox điều khoản.
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -24,6 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _hidePassword = true;
 
   @override
+  // Hủy toàn bộ controller của form khi màn hình bị dispose.
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
@@ -34,6 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   @override
+  // build dựng form đăng ký và trạng thái loading từ AuthProvider.
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
 
@@ -59,6 +66,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 textAlign: TextAlign.center,
                 style: AppTextStyles.muted,
               ),
+              const SizedBox(height: 8),
+              const _ApiEndpointNote(),
               const SizedBox(height: 26),
               TextFormField(
                 controller: _nameController,
@@ -167,7 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 12),
               PrimaryButton(
-                label: auth.isLoading ? 'Đang đăng ký...' : 'Đăng ký',
+                label: auth.isLoading ? 'Đang xử lý...' : 'Đăng ký',
                 icon: Icons.person_add_alt_1,
                 onPressed: auth.isLoading ? null : _submit,
               ),
@@ -191,6 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  // Kiểm tra điều khoản, validate form rồi gọi AuthProvider.register.
   Future<void> _submit() async {
     if (!_acceptedPolicy) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -225,5 +235,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
+  }
+}
+
+// Hiển thị backend URL hiện tại để dễ kiểm tra app đang gọi đúng API.
+class _ApiEndpointNote extends StatelessWidget {
+  const _ApiEndpointNote();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SelectableText(
+        'API: ${ApiClient.instance.baseUrl}/auth/register',
+        style: AppTextStyles.muted.copyWith(fontSize: 12),
+      ),
+    );
   }
 }

@@ -1,15 +1,20 @@
+// Thư viện Material cung cấp ListView, button và icon cho trang hồ sơ.
 import 'package:flutter/material.dart';
+// Provider dùng để đọc user hiện tại và gọi logout.
 import 'package:provider/provider.dart';
 
+// Import màu, kiểu chữ, widget dòng thông tin và AuthProvider.
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text_styles.dart';
 import '../../core/widgets/info_row.dart';
 import '../../providers/auth_provider.dart';
 
+// Màn hình hồ sơ hiển thị thông tin user và các mục menu tài khoản.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
+  // build dựng phần giao diện của widget trong trang hồ sơ.
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().currentUser;
 
@@ -33,24 +38,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              ClipOval(
-                child: Image.network(
-                  user.avatar,
-                  width: 96,
-                  height: 96,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Container(
-                    width: 96,
-                    height: 96,
-                    color: AppColors.secondary,
-                    child: const Icon(
-                      Icons.person,
-                      color: AppColors.primary,
-                      size: 46,
-                    ),
-                  ),
-                ),
-              ),
+              const _BlankProfileAvatar(size: 96),
               const SizedBox(height: 14),
               Text(user.fullName, style: AppTextStyles.sectionTitle),
               const SizedBox(height: 4),
@@ -128,6 +116,32 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
+// Avatar tròn mặc định trong trang hồ sơ.
+class _BlankProfileAvatar extends StatelessWidget {
+  const _BlankProfileAvatar({required this.size});
+
+  final double size;
+
+  @override
+  // build dựng phần giao diện của widget trong trang hồ sơ.
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: const BoxDecoration(
+        color: AppColors.secondary,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        Icons.person_outline,
+        color: AppColors.primary,
+        size: size * .48,
+      ),
+    );
+  }
+}
+
+// Một dòng menu trong trang hồ sơ, hiện mới là mục giao diện tĩnh.
 class _MenuTile extends StatelessWidget {
   const _MenuTile({required this.icon, required this.title});
 
@@ -135,6 +149,7 @@ class _MenuTile extends StatelessWidget {
   final String title;
 
   @override
+  // build dựng phần giao diện của widget trong trang hồ sơ.
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),

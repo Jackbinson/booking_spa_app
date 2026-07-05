@@ -1,26 +1,19 @@
-// Thư viện Material cung cấp InkWell, Icon và Container cho chip.
 import 'package:flutter/material.dart';
 
-// Import màu và shadow dùng để thể hiện trạng thái selected.
 import '../constants/app_colors.dart';
 
-// StatelessWidget vì mọi trạng thái được truyền từ widget cha qua selected/onTap.
 class CategoryChip extends StatelessWidget {
   const CategoryChip({
-    super.key, // tham chiếu đến lớp cha
-    required this.label, // từ khóa dùng để yêu cầu bắt buộc khi gọi hàm hoặc khởi tạo widget
+    super.key,
+    required this.label,
     required this.selected,
     required this.onTap,
     this.icon,
   });
 
-  // Chữ hiển thị trên chip, ví dụ: Massage, Nail, Combo.
   final String label;
-  // true nếu chip đang được chọn.
   final bool selected;
-  // Hàm gọi khi người dùng bấm vào chip.
   final VoidCallback onTap;
-  // Icon có thể có hoặc không, nên dùng kiểu nullable IconData?.
   final IconData? icon;
 
   @override

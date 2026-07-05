@@ -9,6 +9,10 @@ import '../../core/widgets/section_title.dart';
 import '../../models/spa_service.dart';
 import '../../providers/booking_provider.dart';
 
+const _openingTime = TimeOfDay(hour: 8, minute: 0);
+const _closingTime = TimeOfDay(hour: 21, minute: 0);
+const _workingHoursLabel = '08:00 - 21:00';
+
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key, required this.service});
 
@@ -28,12 +32,19 @@ class _BookingScreenState extends State<BookingScreen> {
   String? _selectedTime;
 
   final List<String> _times = const [
+    '08:00',
     '09:00',
     '10:00',
+    '11:00',
+    '12:00',
     '13:30',
+    '14:00',
     '15:00',
     '16:30',
     '18:00',
+    '19:00',
+    '20:00',
+    '21:00',
   ];
 
   @override
@@ -137,6 +148,12 @@ class _BookingScreenState extends State<BookingScreen> {
     }
     if (_selectedTime == null) {
       _showError('Vui lòng chọn giờ');
+      return;
+    }
+    final selectedTimeOfDay = _parseTimeOfDay(_selectedTime);
+    if (selectedTimeOfDay == null ||
+        !_isWithinWorkingHours(selectedTimeOfDay)) {
+      _showError('Vui lòng chọn giờ trong khung $_workingHoursLabel');
       return;
     }
     if (!_formKey.currentState!.validate()) {
@@ -280,6 +297,7 @@ class _TimeSelector extends StatelessWidget {
   }
 
   Future<void> _pickTime(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
     final initialTime =
         _parseTime(selectedTime) ?? const TimeOfDay(hour: 9, minute: 0);
     final picked = await showTimePicker(
@@ -302,30 +320,49 @@ class _TimeSelector extends StatelessWidget {
       return;
     }
 
-    onTimeChanged(_formatTime(picked));
+    if (!_isWithinWorkingHours(picked)) {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Vui lòng chọn giờ trong khung $_workingHoursLabel'),
+        ),
+      );
+      return;
+    }
+
+    onTimeChanged(_formatTimeOfDay(picked));
   }
 
-  TimeOfDay? _parseTime(String? value) {
-    if (value == null) {
-      return null;
-    }
-    final parts = value.split(':');
-    if (parts.length != 2) {
-      return null;
-    }
-    final hour = int.tryParse(parts[0]);
-    final minute = int.tryParse(parts[1]);
-    if (hour == null || minute == null) {
-      return null;
-    }
-    return TimeOfDay(hour: hour, minute: minute);
-  }
+  TimeOfDay? _parseTime(String? value) => _parseTimeOfDay(value);
+}
 
-  String _formatTime(TimeOfDay time) {
-    final hour = time.hour.toString().padLeft(2, '0');
-    final minute = time.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
+TimeOfDay? _parseTimeOfDay(String? value) {
+  if (value == null) {
+    return null;
   }
+  final parts = value.split(':');
+  if (parts.length != 2) {
+    return null;
+  }
+  final hour = int.tryParse(parts[0]);
+  final minute = int.tryParse(parts[1]);
+  if (hour == null || minute == null) {
+    return null;
+  }
+  return TimeOfDay(hour: hour, minute: minute);
+}
+
+bool _isWithinWorkingHours(TimeOfDay time) {
+  final minutes = _toMinutes(time);
+  return minutes >= _toMinutes(_openingTime) &&
+      minutes <= _toMinutes(_closingTime);
+}
+
+int _toMinutes(TimeOfDay time) => time.hour * 60 + time.minute;
+
+String _formatTimeOfDay(TimeOfDay time) {
+  final hour = time.hour.toString().padLeft(2, '0');
+  final minute = time.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
 }
 
 class _SelectedService extends StatelessWidget {

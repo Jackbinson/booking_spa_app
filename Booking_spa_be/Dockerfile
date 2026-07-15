@@ -4,11 +4,11 @@ WORKDIR /app
 
 RUN corepack enable
 
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 RUN pnpm install --prod --frozen-lockfile
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 3001
 
 CMD ["pnpm", "start"]

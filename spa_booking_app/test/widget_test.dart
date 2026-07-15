@@ -7,7 +7,7 @@ void main() {
     await tester.pumpWidget(const MyApp());
 
     expect(find.textContaining('Email'), findsOneWidget);
-    expect(find.text('admin@local.spa'), findsOneWidget);
-    expect(find.textContaining('API:'), findsOneWidget);
+    expect(find.text('admin@spa.local'), findsOneWidget);
+    expect(find.textContaining('API:'), findsNothing);
   });
 }

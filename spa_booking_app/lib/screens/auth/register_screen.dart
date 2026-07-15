@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 // Import màu, kiểu chữ, nút chính và provider đăng ký.
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text_styles.dart';
-import '../../core/network/api_client.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../providers/auth_provider.dart';
 
@@ -66,8 +65,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 textAlign: TextAlign.center,
                 style: AppTextStyles.muted,
               ),
-              const SizedBox(height: 8),
-              const _ApiEndpointNote(),
               const SizedBox(height: 26),
               TextFormField(
                 controller: _nameController,
@@ -235,20 +232,5 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
-  }
-}
-
-// Hiển thị backend URL hiện tại để dễ kiểm tra app đang gọi đúng API.
-class _ApiEndpointNote extends StatelessWidget {
-  const _ApiEndpointNote();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SelectableText(
-        'API: ${ApiClient.instance.baseUrl}/auth/register',
-        style: AppTextStyles.muted.copyWith(fontSize: 12),
-      ),
-    );
   }
 }

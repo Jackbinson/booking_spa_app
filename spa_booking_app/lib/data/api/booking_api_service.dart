@@ -32,6 +32,8 @@ class BookingApiService {
       body: {
         'serviceId': service.id,
         'appointmentTime': appointmentTime.toUtc().toIso8601String(),
+        'customerName': customerName.trim(),
+        'phone': phone.trim(),
         if (note.trim().isNotEmpty) 'note': note.trim(),
       },
     );

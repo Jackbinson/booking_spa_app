@@ -200,12 +200,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          _PaymentCard(
-            booking: b,
-            isBusy: isBusy,
-            onConfirmPayment: _handleConfirmPayment,
-          ),
-          const SizedBox(height: 12),
           if (b.note.isNotEmpty)
             _InfoCard(
               icon: Icons.notes_rounded,
@@ -235,6 +229,12 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           ),
           const SizedBox(height: 12),
           _ActivityLog(booking: b),
+          const SizedBox(height: 16),
+          _PaymentCard(
+            booking: b,
+            isBusy: isBusy,
+            onConfirmPayment: _handleConfirmPayment,
+          ),
           const SizedBox(height: 100),
         ],
       ),

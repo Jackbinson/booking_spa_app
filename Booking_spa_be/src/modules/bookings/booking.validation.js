@@ -10,6 +10,8 @@ const createBookingSchema = z.object({
   body: z.object({
     serviceId: uuid,
     appointmentTime: z.string().datetime(),
+    customerName: z.string().trim().min(2).max(120),
+    phone: z.string().trim().min(8).max(20),
     note: z.string().trim().max(500).optional(),
   }),
   params: z.object({}).passthrough(),

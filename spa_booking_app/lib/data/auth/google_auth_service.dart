@@ -75,9 +75,19 @@ class GoogleAuthService {
       return _idTokenFrom(account);
     } on GoogleSignInException catch (error) {
       final details = error.toString().toLowerCase();
-      if (details.contains('account reauth failed')) {
+      if (details.contains('no credential available') ||
+          details.contains('no credentials available')) {
         throw const GoogleAuthException(
-          '\u0110\u0103ng nh\u1eadp Google ch\u01b0a \u0111\u01b0\u1ee3c c\u1ea5u h\u00ecnh cho Android. Ki\u1ec3m tra package v\u00e0 SHA-1 OAuth r\u1ed3i th\u1eed l\u1ea1i.',
+          'Emulator chưa có tài khoản Google. Hãy thêm tài khoản trong Settings rồi thử lại.',
+        );
+      }
+      if (details.contains('account reauth failed') ||
+          details.contains('unregistered_on_api_console')) {
+        throw const GoogleAuthException(
+          'Google Cloud ch\u01b0a \u0111\u0103ng k\u00fd Android app n\u00e0y. '
+          'Ki\u1ec3m tra OAuth Android v\u1edbi package '
+          'com.example.spa_booking_app v\u00e0 SHA-1 '
+          'AD:08:34:D0:C3:02:1F:4B:DC:86:F8:F1:46:BF:1C:2C:65:71:7F:3D.',
         );
       }
       rethrow;

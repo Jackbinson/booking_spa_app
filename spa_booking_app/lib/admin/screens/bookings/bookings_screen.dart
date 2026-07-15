@@ -300,11 +300,13 @@ class _BookingsScreenState extends State<BookingsScreen> {
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
-        itemCount: filtered.isEmpty ? 1 : filtered.length + 1,
-        separatorBuilder: (_, i) => i < filtered.length - 1
-            ? const SizedBox(height: 12)
-            : const SizedBox.shrink(),
+        itemCount: filtered.isEmpty ? 2 : filtered.length + 1,
+        separatorBuilder: (_, _) => const SizedBox(height: 12),
         itemBuilder: (context, i) {
+          if (i == 0) {
+            return _UpcomingBanner(count: _upcomingCount(provider.bookings));
+          }
+
           if (filtered.isEmpty) {
             return const _MessageState(
               icon: Icons.event_busy_rounded,
@@ -314,26 +316,19 @@ class _BookingsScreenState extends State<BookingsScreen> {
             );
           }
 
-          if (i < filtered.length) {
-            final booking = filtered[i];
-            final busy = provider.isUpdating(booking.id);
-            return _BookingCard(
-              booking: booking,
-              isBusy: busy,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => BookingDetailScreen(booking: booking),
-                ),
+          final booking = filtered[i - 1];
+          final busy = provider.isUpdating(booking.id);
+          return _BookingCard(
+            booking: booking,
+            isBusy: busy,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BookingDetailScreen(booking: booking),
               ),
-              onConfirm: busy ? null : () => _confirmBooking(booking),
-              onCancel: busy ? null : () => _cancelBooking(booking),
-            );
-          }
-
-          return Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: _UpcomingBanner(count: _upcomingCount(provider.bookings)),
+            ),
+            onConfirm: busy ? null : () => _confirmBooking(booking),
+            onCancel: busy ? null : () => _cancelBooking(booking),
           );
         },
       ),

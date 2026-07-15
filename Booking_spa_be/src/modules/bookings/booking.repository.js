@@ -9,8 +9,8 @@ function detailedQuery(db = getDb()) {
       'bookings.*',
       'services.name as service_name',
       'services.duration_minutes as service_duration_minutes',
-      'users.full_name as customer_name',
-      'users.phone as customer_phone',
+      db.raw('coalesce(bookings.customer_name, users.full_name) as customer_name'),
+      db.raw('coalesce(bookings.customer_phone, users.phone) as customer_phone'),
       'users.email as customer_email',
     );
 }
@@ -43,7 +43,9 @@ async function list(filters = {}) {
     const keyword = '%' + filters.search + '%';
     query.andWhere((builder) => {
       builder
-        .whereILike('users.full_name', keyword)
+        .whereILike('bookings.customer_name', keyword)
+        .orWhereILike('users.full_name', keyword)
+        .orWhereILike('bookings.customer_phone', keyword)
         .orWhereILike('users.phone', keyword)
         .orWhereILike('users.email', keyword)
         .orWhereILike('services.name', keyword);

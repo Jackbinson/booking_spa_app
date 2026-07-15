@@ -75,8 +75,15 @@ class Appointment {
       ),
       time:
           '${appointmentTime.hour.toString().padLeft(2, '0')}:${appointmentTime.minute.toString().padLeft(2, '0')}',
-      customerName: customerName,
-      phone: phone,
+      customerName:
+          json['customerName']?.toString() ??
+          json['customer_name']?.toString() ??
+          customerName,
+      phone:
+          json['phone']?.toString() ??
+          json['customerPhone']?.toString() ??
+          json['customer_phone']?.toString() ??
+          phone,
       note: json['note']?.toString() ?? '',
       status: _statusFrom(json['status']?.toString()),
     );

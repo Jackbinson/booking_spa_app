@@ -8,7 +8,6 @@ import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text_styles.dart';
 import '../../core/config/google_auth_config.dart';
-import '../../core/network/api_client.dart';
 import '../../core/widgets/google_sign_in_button.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../providers/auth_provider.dart';
@@ -24,7 +23,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _accountController = TextEditingController(text: 'admin@local.spa');
+  final _accountController = TextEditingController(text: 'admin@spa.local');
   final _passwordController = TextEditingController(text: 'Admin@12345');
   bool _hidePassword = true;
 
@@ -57,8 +56,6 @@ class _LoginScreenState extends State<LoginScreen> {
               'Đăng nhập để đặt lịch và quản lý lịch hẹn tại Lavender Spa.',
               style: AppTextStyles.muted,
             ),
-            const SizedBox(height: 8),
-            const _ApiEndpointNote(),
             const SizedBox(height: 28),
             Form(
               key: _formKey,
@@ -150,6 +147,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: auth.isLoading
                     ? null
                     : () async {
+                        if (!GoogleAuthConfig.isConfiguredForCurrentPlatform) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Google Sign-In chưa được cấu hình cho Android.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
                         final success = await context
                             .read<AuthProvider>()
                             .loginWithGoogle();
@@ -220,19 +228,6 @@ class _LoginScreenState extends State<LoginScreen> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
-  }
-}
-
-// Hiển thị backend URL hiện tại để dễ kiểm tra app đang gọi đúng API.
-class _ApiEndpointNote extends StatelessWidget {
-  const _ApiEndpointNote();
-
-  @override
-  Widget build(BuildContext context) {
-    return SelectableText(
-      'API: ${ApiClient.instance.baseUrl}/auth/login',
-      style: AppTextStyles.muted.copyWith(fontSize: 12),
-    );
   }
 }
 

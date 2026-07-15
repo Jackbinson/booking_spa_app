@@ -79,7 +79,7 @@ async function getBookingAvailability(userId, payload) {
   ) {
     return unavailable(
       'OUTSIDE_WORKING_HOURS',
-      `This ${durationMinutes}-minute service must finish during working hours.`,
+      `Dịch vụ kéo dài ${durationMinutes} phút phải bắt đầu và kết thúc trong giờ làm việc của spa.`,
     );
   }
 
@@ -105,6 +105,8 @@ async function createValidatedBooking(userId, payload) {
   return bookingRepository.create({
     user_id: userId,
     service_id: service.id,
+    customer_name: payload.customerName || null,
+    customer_phone: payload.phone || null,
     appointment_time: new Date(payload.appointmentTime),
     note: payload.note,
     total_price: service.price,

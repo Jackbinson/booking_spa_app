@@ -66,5 +66,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Cho phép Lavender Spa truy cập thư viện ảnh để thay ảnh đại diện.</string>
 </dict>
 </plist>

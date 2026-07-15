@@ -1,20 +1,18 @@
-// Thư viện Material cung cấp ListView, button và icon cho trang hồ sơ.
 import 'package:flutter/material.dart';
-// Provider dùng để đọc user hiện tại và gọi logout.
 import 'package:provider/provider.dart';
 
-// Import màu, kiểu chữ, widget dòng thông tin và AuthProvider.
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text_styles.dart';
 import '../../core/widgets/info_row.dart';
+import '../../models/user_profile.dart';
 import '../../providers/auth_provider.dart';
+import 'profile_edit_screen.dart';
+import 'profile_notification_settings_screen.dart';
 
-// Màn hình hồ sơ hiển thị thông tin user và các mục menu tài khoản.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
-  // build dựng phần giao diện của widget trong trang hồ sơ.
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().currentUser;
 
@@ -38,13 +36,15 @@ class ProfileScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              const _BlankProfileAvatar(size: 96),
+              _ProfileAvatar(user: user, size: 96),
               const SizedBox(height: 14),
               Text(user.fullName, style: AppTextStyles.sectionTitle),
               const SizedBox(height: 4),
               Text(user.email, style: AppTextStyles.muted),
-              const SizedBox(height: 4),
-              Text(user.phone, style: AppTextStyles.muted),
+              if (user.phone.trim().isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(user.phone, style: AppTextStyles.muted),
+              ],
             ],
           ),
         ),
@@ -73,13 +73,13 @@ class ProfileScreen extends StatelessWidget {
               InfoRow(
                 icon: Icons.phone_outlined,
                 label: 'Số điện thoại',
-                value: user.phone,
+                value: _valueOrMissing(user.phone),
               ),
               const SizedBox(height: 14),
               InfoRow(
                 icon: Icons.cake_outlined,
                 label: 'Ngày sinh',
-                value: user.birthday,
+                value: _valueOrMissing(user.birthday),
               ),
               const SizedBox(height: 14),
               InfoRow(
@@ -91,15 +91,30 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 22),
-        const _MenuTile(icon: Icons.edit_outlined, title: 'Chỉnh sửa hồ sơ'),
-        const _MenuTile(icon: Icons.notifications_outlined, title: 'Thông báo'),
-        const _MenuTile(icon: Icons.help_outline, title: 'Trợ giúp'),
-        const _MenuTile(icon: Icons.settings_outlined, title: 'Cài đặt'),
+        _MenuTile(
+          icon: Icons.edit_outlined,
+          title: 'Chỉnh sửa hồ sơ',
+          onTap: () => _open(context, const ProfileEditScreen()),
+        ),
+        _MenuTile(
+          icon: Icons.notifications_outlined,
+          title: 'Thông báo',
+          onTap: () =>
+              _open(context, const ProfileNotificationSettingsScreen()),
+        ),
+        _MenuTile(
+          icon: Icons.help_outline,
+          title: 'Trợ giúp',
+          onTap: () => _showHelp(context),
+        ),
+        _MenuTile(
+          icon: Icons.settings_outlined,
+          title: 'Cài đặt',
+          onTap: () => _showSettings(context),
+        ),
         const SizedBox(height: 14),
         OutlinedButton.icon(
-          onPressed: () {
-            context.read<AuthProvider>().logout();
-          },
+          onPressed: () => context.read<AuthProvider>().logout(),
           icon: const Icon(Icons.logout),
           label: const Text('Đăng xuất'),
           style: OutlinedButton.styleFrom(
@@ -114,66 +129,133 @@ class ProfileScreen extends StatelessWidget {
       ],
     );
   }
+
+  static void _open(BuildContext context, Widget page) {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
+  }
+
+  static void _showHelp(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Trợ giúp'),
+        content: const Text(
+          'Nếu cần hỗ trợ đặt lịch hoặc tài khoản, vui lòng liên hệ Lavender Spa qua email support@lavenderspa.vn.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Đã hiểu'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static void _showSettings(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: ListTile(
+          leading: const Icon(Icons.notifications_outlined),
+          title: const Text('Cài đặt thông báo'),
+          subtitle: const Text('Lịch hẹn, ưu đãi và tin tức spa'),
+          onTap: () {
+            Navigator.of(sheetContext).pop();
+            _open(context, const ProfileNotificationSettingsScreen());
+          },
+        ),
+      ),
+    );
+  }
+
+  static String _valueOrMissing(String value) {
+    return value.trim().isEmpty ? 'Chưa cập nhật' : value;
+  }
 }
 
-// Avatar tròn mặc định trong trang hồ sơ.
-class _BlankProfileAvatar extends StatelessWidget {
-  const _BlankProfileAvatar({required this.size});
+class _ProfileAvatar extends StatelessWidget {
+  const _ProfileAvatar({required this.user, required this.size});
 
+  final UserProfile user;
   final double size;
 
   @override
-  // build dựng phần giao diện của widget trong trang hồ sơ.
   Widget build(BuildContext context) {
+    final imageUrl = user.avatar.trim();
     return Container(
       width: size,
       height: size,
+      clipBehavior: Clip.antiAlias,
       decoration: const BoxDecoration(
         color: AppColors.secondary,
         shape: BoxShape.circle,
       ),
-      child: Icon(
-        Icons.person_outline,
-        color: AppColors.primary,
-        size: size * .48,
-      ),
+      child: imageUrl.isEmpty
+          ? Icon(
+              Icons.person_outline,
+              color: AppColors.primary,
+              size: size * .48,
+            )
+          : Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => Icon(
+                Icons.person_outline,
+                color: AppColors.primary,
+                size: size * .48,
+              ),
+            ),
     );
   }
 }
 
-// Một dòng menu trong trang hồ sơ, hiện mới là mục giao diện tĩnh.
 class _MenuTile extends StatelessWidget {
-  const _MenuTile({required this.icon, required this.title});
+  const _MenuTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
 
   final IconData icon;
   final String title;
+  final VoidCallback onTap;
 
   @override
-  // build dựng phần giao diện của widget trong trang hồ sơ.
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(18),
         boxShadow: AppShadows.soft,
       ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.primary),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(
-                color: AppColors.textDark,
-                fontWeight: FontWeight.w800,
-              ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(18),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            child: Row(
+              children: [
+                Icon(icon, color: AppColors.primary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      color: AppColors.textDark,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: AppColors.textLight),
+              ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.textLight),
-        ],
+        ),
       ),
     );
   }

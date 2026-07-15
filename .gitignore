@@ -1,0 +1,37 @@
+# Generated dependencies, IDE settings, and build output
+.dart_tool/
+.idea/
+build/
+tmp/
+*.iml
+**/.dart_tool/
+**/.gradle/
+**/.idea/
+**/build/
+**/node_modules/
+**/coverage/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# Flutter-generated platform files
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/macos/Flutter/ephemeral/
+**/linux/flutter/ephemeral/
+**/windows/flutter/ephemeral/
+**/android/local.properties
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+.secrets/
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Preserve the backend repository metadata locally after flattening it.
+Booking_spa_be/.git-repo-backup/

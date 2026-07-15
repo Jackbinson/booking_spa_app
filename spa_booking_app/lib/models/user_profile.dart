@@ -1,4 +1,3 @@
-// Model hồ sơ người dùng đang đăng nhập.
 class UserProfile {
   const UserProfile({
     required this.fullName,
@@ -7,29 +6,43 @@ class UserProfile {
     required this.birthday,
     required this.gender,
     required this.avatar,
+    this.role = 'customer',
+    this.id = '',
+    this.address = '',
+    this.bookingUpdatesEnabled = true,
+    this.promotionsEnabled = true,
   });
 
-  // Họ tên hiển thị trên trang chủ và hồ sơ.
   final String fullName;
-  // Email đăng nhập/liên hệ của người dùng.
   final String email;
-  // Số điện thoại dùng khi đặt lịch.
   final String phone;
-  // Ngày sinh dạng chuỗi hiển thị, có fallback nếu API chưa có.
   final String birthday;
-  // Giới tính đã được chuyển sang nhãn tiếng Việt.
   final String gender;
-  // URL ảnh đại diện; rỗng thì UI dùng avatar mặc định.
   final String avatar;
+  final String role;
+  final String id;
+  final String address;
+  final bool bookingUpdatesEnabled;
+  final bool promotionsEnabled;
 
-  // Chuyển JSON user/profile từ backend thành UserProfile an toàn cho UI.
+  bool get isAdmin => role.toLowerCase() == 'admin';
+
   factory UserProfile.fromApiJson(Map<String, dynamic> json) {
     final profile = json['profile'];
     final profileMap = profile is Map<String, dynamic>
         ? profile
         : const <String, dynamic>{};
+    final preferences = profileMap['preferences'];
+    final preferenceMap = preferences is Map<String, dynamic>
+        ? preferences
+        : const <String, dynamic>{};
+    final notifications = preferenceMap['notifications'];
+    final notificationMap = notifications is Map<String, dynamic>
+        ? notifications
+        : const <String, dynamic>{};
 
     return UserProfile(
+      id: json['id']?.toString() ?? '',
       fullName:
           json['fullName']?.toString() ??
           json['full_name']?.toString() ??
@@ -39,16 +52,19 @@ class UserProfile {
       birthday:
           profileMap['birthDate']?.toString() ??
           profileMap['birth_date']?.toString() ??
-          'Chưa cập nhật',
+          '',
       gender: _genderLabel(profileMap['gender']?.toString()),
       avatar:
           profileMap['avatarUrl']?.toString() ??
           profileMap['avatar_url']?.toString() ??
           '',
+      role: json['role']?.toString() ?? 'customer',
+      address: profileMap['address']?.toString() ?? '',
+      bookingUpdatesEnabled: notificationMap['bookingUpdates'] as bool? ?? true,
+      promotionsEnabled: notificationMap['promotions'] as bool? ?? true,
     );
   }
 
-  // Chuẩn hóa giá trị gender từ API sang nhãn tiếng Việt.
   static String _genderLabel(String? value) {
     switch (value) {
       case 'male':

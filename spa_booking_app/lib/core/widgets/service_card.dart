@@ -150,10 +150,19 @@ class _ServiceImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = compactSide ? 126.0 : double.infinity;
-    final image = service.image.trim().isEmpty
+    final imagePath = service.image.trim();
+    final image = imagePath.isEmpty
         ? _placeholder(width, height)
+        : imagePath.startsWith('assets/')
+        ? Image.asset(
+            imagePath,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+            errorBuilder: (_, _, _) => _placeholder(width, height),
+          )
         : Image.network(
-            service.image,
+            imagePath,
             width: width,
             height: height,
             fit: BoxFit.cover,

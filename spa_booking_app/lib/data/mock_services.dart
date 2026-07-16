@@ -53,7 +53,7 @@ List<SpaService> filterServiceList({
   required String keyword,
 }) {
   // Chuẩn hóa keyword: bỏ khoảng trắng đầu/cuối và chuyển chữ thường để tìm không phân biệt hoa/thường.
-  final normalizedKeyword = keyword.trim().toLowerCase();
+  final normalizedKeyword = _normalizeSearchText(keyword);
 
   // where duyệt từng dịch vụ và chỉ giữ lại dịch vụ thỏa điều kiện.
   final filtered = services.where((service) {
@@ -103,7 +103,28 @@ int _matchScore(SpaService service, String normalizedKeyword) {
 }
 
 // Ghép nhiều trường text thành một chuỗi chữ thường để so khớp keyword.
-String _searchText(List<String> values) => values.join(' ').toLowerCase();
+String _searchText(List<String> values) =>
+    _normalizeSearchText(values.join(' '));
+
+// Chuẩn hóa tiếng Việt để người dùng có thể tìm cả có dấu lẫn không dấu.
+String _normalizeSearchText(String value) {
+  var normalized = value.trim().toLowerCase();
+  const replacements = <String, String>{
+    'a': 'àáạảãâầấậẩẫăằắặẳẵ',
+    'e': 'èéẹẻẽêềếệểễ',
+    'i': 'ìíịỉĩ',
+    'o': 'òóọỏõôồốộổỗơờớợởỡ',
+    'u': 'ùúụủũưừứựửữ',
+    'y': 'ỳýỵỷỹ',
+    'd': 'đ',
+  };
+
+  for (final entry in replacements.entries) {
+    normalized = normalized.replaceAll(RegExp('[${entry.value}]'), entry.key);
+  }
+
+  return normalized.replaceAll(RegExp(r'\s+'), ' ');
+}
 
 // Danh sách dịch vụ mẫu. Mỗi SpaService gồm id, tên, category, mô tả, giá, ảnh, rating, tag, lợi ích và quy trình.
 const List<SpaService> mockServices = [

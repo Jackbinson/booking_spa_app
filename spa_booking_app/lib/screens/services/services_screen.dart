@@ -12,6 +12,7 @@ import '../../core/constants/app_text_styles.dart';
 import '../../core/widgets/category_chip.dart';
 import '../../core/widgets/section_title.dart';
 import '../../core/widgets/service_card.dart';
+import '../../core/widgets/service_search_suggestions.dart';
 import '../../data/mock_services.dart';
 import '../../models/spa_service.dart';
 import '../../providers/catalog_provider.dart';
@@ -128,6 +129,11 @@ class _ServicesScreenState extends State<ServicesScreen> {
                           icon: const Icon(Icons.close_rounded),
                         ),
                 ),
+              ),
+              ServiceSearchSuggestions(
+                query: _keyword,
+                services: services,
+                onSelected: widget.onOpenService,
               ),
               const SizedBox(height: 14),
               SizedBox(

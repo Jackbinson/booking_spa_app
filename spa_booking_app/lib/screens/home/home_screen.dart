@@ -11,6 +11,7 @@ import '../../core/widgets/category_chip.dart';
 import '../../core/widgets/info_row.dart';
 import '../../core/widgets/section_title.dart';
 import '../../core/widgets/service_card.dart';
+import '../../core/widgets/service_search_suggestions.dart';
 import '../../data/mock_services.dart';
 import '../../data/mock_spa_data.dart';
 import '../../models/spa_service.dart';
@@ -135,8 +136,11 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 20),
         _SearchField(
           controller: _searchController,
+          query: _keyword,
+          suggestions: filteredServices,
           onChanged: (value) => setState(() => _keyword = value),
           onClear: _clearSearch,
+          onSuggestionTap: widget.onOpenService,
         ),
         const SizedBox(height: 20),
         const _PromoBanner(),
@@ -252,32 +256,47 @@ class _BlankProfileAvatar extends StatelessWidget {
 class _SearchField extends StatelessWidget {
   const _SearchField({
     required this.controller,
+    required this.query,
+    required this.suggestions,
     required this.onChanged,
     required this.onClear,
+    required this.onSuggestionTap,
   });
 
   final TextEditingController controller;
+  final String query;
+  final List<SpaService> suggestions;
   final ValueChanged<String> onChanged;
   final VoidCallback onClear;
+  final ValueChanged<SpaService> onSuggestionTap;
 
   @override
   // build dựng phần giao diện của widget trong trang chủ.
   Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      onChanged: onChanged,
-      textInputAction: TextInputAction.search,
-      decoration: InputDecoration(
-        hintText: 'Tìm dịch vụ spa',
-        prefixIcon: const Icon(Icons.search),
-        suffixIcon: controller.text.isEmpty
-            ? null
-            : IconButton(
-                tooltip: 'Xóa tìm kiếm',
-                onPressed: onClear,
-                icon: const Icon(Icons.close_rounded),
-              ),
-      ),
+    return Column(
+      children: [
+        TextField(
+          controller: controller,
+          onChanged: onChanged,
+          textInputAction: TextInputAction.search,
+          decoration: InputDecoration(
+            hintText: 'Tìm dịch vụ spa',
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon: query.isEmpty
+                ? null
+                : IconButton(
+                    tooltip: 'Xóa tìm kiếm',
+                    onPressed: onClear,
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+          ),
+        ),
+        ServiceSearchSuggestions(
+          query: query,
+          services: suggestions,
+          onSelected: onSuggestionTap,
+        ),
+      ],
     );
   }
 }

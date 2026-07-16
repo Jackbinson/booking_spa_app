@@ -1,0 +1,1 @@
+$ nodemon --exec "node --use-system-ca" src/server.js

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 // Thư viện Material cung cấp layout, tab chip và SnackBar.
 import 'package:flutter/material.dart';
 // Provider dùng để đọc danh sách lịch hẹn từ BookingProvider.
@@ -19,20 +21,52 @@ class AppointmentsScreen extends StatefulWidget {
   State<AppointmentsScreen> createState() => _AppointmentsScreenState();
 }
 
-class _AppointmentsScreenState extends State<AppointmentsScreen> {
+class _AppointmentsScreenState extends State<AppointmentsScreen>
+    with WidgetsBindingObserver {
+  static const _autoRefreshInterval = Duration(seconds: 10);
+
   int _selectedTab = 0;
   final List<String> _tabs = const ['Sắp tới', 'Đã hoàn thành', 'Đã hủy'];
+  Timer? _autoRefreshTimer;
 
   @override
   // Sau frame đầu, yêu cầu provider nạp danh sách lịch hẹn.
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) {
         return;
       }
-      context.read<BookingProvider>().loadAppointments();
+      _refreshAppointments();
     });
+    _autoRefreshTimer = Timer.periodic(_autoRefreshInterval, (_) {
+      _refreshAppointments(silent: true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _autoRefreshTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshAppointments(silent: true);
+    }
+  }
+
+  Future<void> _refreshAppointments({bool silent = false}) async {
+    if (!mounted) {
+      return;
+    }
+    await context.read<BookingProvider>().loadAppointments(
+      refresh: true,
+      silent: silent,
+    );
   }
 
   @override
@@ -91,9 +125,12 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     List<Appointment> appointments,
   ) {
     if (provider.errorMessage != null && provider.appointments.isEmpty) {
-      return _AppointmentsErrorState(
-        message: provider.errorMessage!,
-        onRetry: () => provider.loadAppointments(refresh: true),
+      return _refreshableState(
+        provider,
+        _AppointmentsErrorState(
+          message: provider.errorMessage!,
+          onRetry: () => provider.loadAppointments(refresh: true),
+        ),
       );
     }
 
@@ -103,20 +140,38 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     }
 
     if (appointments.isEmpty) {
-      return const _EmptyAppointments();
+      return _refreshableState(provider, const _EmptyAppointments());
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(18, 0, 18, 24),
-      itemCount: appointments.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 14),
-      itemBuilder: (context, index) {
-        final appointment = appointments[index];
-        return AppointmentCard(
-          appointment: appointment,
-          onCancel: provider.isLoading
-              ? null
-              : () => _cancelAppointment(provider, appointment.id),
+    return RefreshIndicator(
+      onRefresh: () => provider.loadAppointments(refresh: true),
+      child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(18, 0, 18, 24),
+        itemCount: appointments.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 14),
+        itemBuilder: (context, index) {
+          final appointment = appointments[index];
+          return AppointmentCard(
+            appointment: appointment,
+            onCancel: provider.isLoading
+                ? null
+                : () => _cancelAppointment(provider, appointment.id),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _refreshableState(BookingProvider provider, Widget child) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return RefreshIndicator(
+          onRefresh: () => provider.loadAppointments(refresh: true),
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [SizedBox(height: constraints.maxHeight, child: child)],
+          ),
         );
       },
     );

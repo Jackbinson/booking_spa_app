@@ -244,7 +244,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   Future<void> _handleCancel() async {
     final accepted = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('H\u1ee7y l\u1ecbch h\u1eb9n?'),
         content: const Text(
@@ -252,14 +252,14 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
             child: const Text('Kh\u00f4ng'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: AdminColors.statusCancelled,
             ),
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
             child: const Text('H\u1ee7y l\u1ecbch'),
           ),
         ],
@@ -301,7 +301,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   Future<void> _handleConfirmPayment() async {
     final accepted = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('X\u00e1c nh\u1eadn giao d\u1ecbch?'),
         content: Text(
@@ -309,11 +309,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
             child: const Text('\u0110\u1ec3 sau'),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
             child: const Text('X\u00e1c nh\u1eadn'),
           ),
         ],

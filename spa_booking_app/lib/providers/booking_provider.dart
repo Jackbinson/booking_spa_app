@@ -18,6 +18,7 @@ class BookingProvider extends ChangeNotifier {
 
   int _currentTabIndex = 0;
   bool _isLoading = false;
+  bool _isFetchingAppointments = false;
   bool _loaded = false;
   String? _errorMessage;
   int _loadRequestId = 0;
@@ -36,13 +37,19 @@ class BookingProvider extends ChangeNotifier {
   }
 
   // Tải danh sách lịch hẹn từ backend; refresh=true cho phép tải lại thủ công.
-  Future<void> loadAppointments({bool refresh = false}) async {
-    if (_isLoading || (_loaded && !refresh)) {
+  Future<void> loadAppointments({
+    bool refresh = false,
+    bool silent = false,
+  }) async {
+    if (_isLoading || _isFetchingAppointments || (_loaded && !refresh)) {
       return;
     }
 
     final requestId = ++_loadRequestId;
-    _setLoading(true);
+    _isFetchingAppointments = true;
+    if (!silent) {
+      _setLoading(true);
+    }
     try {
       final bookings = await _apiService.fetchMyBookings();
       if (requestId != _loadRequestId) {
@@ -53,13 +60,21 @@ class BookingProvider extends ChangeNotifier {
         ..addAll(bookings);
       _errorMessage = null;
       _loaded = true;
+      if (silent) {
+        notifyListeners();
+      }
     } catch (error) {
       if (requestId != _loadRequestId) {
         return;
       }
-      _errorMessage = _messageFrom(error, 'Không thể tải lịch hẹn.');
+      if (!silent) {
+        _errorMessage = _messageFrom(error, 'Không thể tải lịch hẹn.');
+      }
     } finally {
-      _setLoading(false);
+      _isFetchingAppointments = false;
+      if (!silent) {
+        _setLoading(false);
+      }
     }
   }
 

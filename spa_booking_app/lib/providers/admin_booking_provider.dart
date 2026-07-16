@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../admin/models/admin_mock_data.dart';
@@ -177,6 +179,7 @@ class AdminBookingProvider extends ChangeNotifier {
       );
       _upsert(booking);
       _errorMessage = null;
+      unawaited(loadBookingFormOptions(refresh: true));
       return booking;
     } catch (error) {
       _errorMessage = _messageFrom(
@@ -202,6 +205,7 @@ class AdminBookingProvider extends ChangeNotifier {
       final booking = await _apiService.updatePaymentStatus(id, paymentStatus);
       _upsert(booking);
       _errorMessage = null;
+      unawaited(loadBookingFormOptions(refresh: true));
       return booking;
     } catch (error) {
       _errorMessage = _messageFrom(

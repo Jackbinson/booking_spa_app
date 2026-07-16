@@ -85,13 +85,7 @@ class ServiceCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: _CategoryLabel(category: service.category)),
-                    _Rating(rating: service.rating),
-                  ],
-                ),
+                _CategoryLabel(category: service.category),
                 const SizedBox(height: 8),
                 _ServiceTitle(service.name),
                 const SizedBox(height: 8),
@@ -294,38 +288,6 @@ class _MetaLine extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-// Widget hiển thị rating dạng sao + số điểm.
-class _Rating extends StatelessWidget {
-  const _Rating({required this.rating});
-
-  final double rating;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-      decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: .12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.star_rounded, color: AppColors.warning, size: 16),
-          const SizedBox(width: 3),
-          Text(
-            rating.toStringAsFixed(1),
-            style: const TextStyle(
-              color: AppColors.textDark,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

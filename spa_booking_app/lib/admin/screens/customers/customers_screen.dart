@@ -229,23 +229,39 @@ class _CustomersScreenState extends State<CustomersScreen> {
             ),
           ),
           Expanded(
-            child: customers.isEmpty
-                ? _EmptyCustomersState(
-                    onClear: () {
-                      _searchCtrl.clear();
-                      setState(() {
-                        _searchQuery = '';
-                        _filterIndex = 0;
-                      });
-                    },
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
-                    itemCount: customers.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) =>
-                        _CustomerCard(customer: customers[index]),
-                  ),
+            child: RefreshIndicator(
+              onRefresh: () => provider.loadBookingFormOptions(refresh: true),
+              child: customers.isEmpty
+                  ? LayoutBuilder(
+                      builder: (context, constraints) {
+                        return ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            SizedBox(
+                              height: constraints.maxHeight,
+                              child: _EmptyCustomersState(
+                                onClear: () {
+                                  _searchCtrl.clear();
+                                  setState(() {
+                                    _searchQuery = '';
+                                    _filterIndex = 0;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    )
+                  : ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
+                      itemCount: customers.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
+                      itemBuilder: (context, index) =>
+                          _CustomerCard(customer: customers[index]),
+                    ),
+            ),
           ),
         ],
       ),

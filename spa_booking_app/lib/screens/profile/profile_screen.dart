@@ -79,7 +79,7 @@ class ProfileScreen extends StatelessWidget {
               InfoRow(
                 icon: Icons.cake_outlined,
                 label: 'Ngày sinh',
-                value: _valueOrMissing(user.birthday),
+                value: _valueOrMissing(formatProfileBirthDate(user.birthday)),
               ),
               const SizedBox(height: 14),
               InfoRow(

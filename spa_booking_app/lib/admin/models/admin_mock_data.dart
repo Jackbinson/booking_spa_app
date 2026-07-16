@@ -1,4 +1,4 @@
-﻿import 'package:intl/intl.dart';
+import 'package:intl/intl.dart';
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Models
@@ -59,6 +59,7 @@ AdminPaymentStatus adminPaymentStatusFromApi(String? value) {
 class AdminBooking {
   const AdminBooking({
     required this.id,
+    this.customerId = '',
     required this.customerName,
     required this.phone,
     required this.serviceName,
@@ -72,6 +73,7 @@ class AdminBooking {
   });
 
   final String id;
+  final String customerId;
   final String customerName;
   final String phone;
   final String serviceName;
@@ -95,6 +97,11 @@ class AdminBooking {
 
     return AdminBooking(
       id: json['id']?.toString() ?? '',
+      customerId:
+          json['customerId']?.toString() ??
+          json['userId']?.toString() ??
+          json['user_id']?.toString() ??
+          '',
       customerName:
           json['customerName']?.toString() ??
           json['customer_name']?.toString() ??
@@ -129,6 +136,7 @@ class AdminBooking {
   }) {
     return AdminBooking(
       id: id,
+      customerId: customerId,
       customerName: customerName,
       phone: phone,
       serviceName: serviceName,

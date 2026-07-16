@@ -28,7 +28,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     final user = context.read<AuthProvider>().currentUser;
     _nameController = TextEditingController(text: user.fullName);
     _phoneController = TextEditingController(text: user.phone);
-    _birthdayController = TextEditingController(text: user.birthday);
+    _birthdayController = TextEditingController(
+      text: profileBirthDateInputValue(user.birthday),
+    );
     _addressController = TextEditingController(text: user.address);
     _gender = _genderValue(user.gender);
   }

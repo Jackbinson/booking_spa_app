@@ -78,3 +78,50 @@ class UserProfile {
     }
   }
 }
+
+String formatProfileBirthDate(String value) {
+  final date = _parseProfileBirthDate(value);
+  if (date == null) {
+    return value.trim();
+  }
+
+  return '${date.day.toString().padLeft(2, '0')}/'
+      '${date.month.toString().padLeft(2, '0')}/'
+      '${date.year.toString().padLeft(4, '0')}';
+}
+
+String profileBirthDateInputValue(String value) {
+  final date = _parseProfileBirthDate(value);
+  if (date == null) {
+    return value.trim();
+  }
+
+  return '${date.year.toString().padLeft(4, '0')}-'
+      '${date.month.toString().padLeft(2, '0')}-'
+      '${date.day.toString().padLeft(2, '0')}';
+}
+
+DateTime? _parseProfileBirthDate(String value) {
+  final normalized = value.trim();
+  if (normalized.isEmpty) {
+    return null;
+  }
+
+  final parsed = DateTime.tryParse(normalized);
+  if (parsed != null) {
+    return parsed.isUtc ? parsed.add(const Duration(hours: 7)) : parsed;
+  }
+
+  final vietnameseDate = RegExp(
+    r'^(\d{2})/(\d{2})/(\d{4})$',
+  ).firstMatch(normalized);
+  if (vietnameseDate == null) {
+    return null;
+  }
+
+  return DateTime(
+    int.parse(vietnameseDate.group(3)!),
+    int.parse(vietnameseDate.group(2)!),
+    int.parse(vietnameseDate.group(1)!),
+  );
+}

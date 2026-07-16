@@ -44,16 +44,9 @@ class ServiceDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          service.name,
-                          style: AppTextStyles.title.copyWith(fontSize: 28),
-                        ),
-                      ),
-                      _RatingBadge(rating: service.rating),
-                    ],
+                  Text(
+                    service.name,
+                    style: AppTextStyles.title.copyWith(fontSize: 28),
                   ),
                   const SizedBox(height: 10),
                   Text(service.description, style: AppTextStyles.muted),
@@ -294,37 +287,6 @@ class _InfoTile extends StatelessWidget {
 }
 
 // Badge hiển thị điểm đánh giá sao của dịch vụ.
-class _RatingBadge extends StatelessWidget {
-  const _RatingBadge({required this.rating});
-
-  final double rating;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: .12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.star_rounded, color: AppColors.warning, size: 18),
-          const SizedBox(width: 4),
-          Text(
-            rating.toStringAsFixed(1),
-            style: const TextStyle(
-              color: AppColors.textDark,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 // Item lợi ích: icon check + nội dung lợi ích của dịch vụ.
 class _BenefitItem extends StatelessWidget {
   const _BenefitItem({required this.text});

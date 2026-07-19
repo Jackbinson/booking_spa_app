@@ -39,7 +39,6 @@ src/
   config/        Environment, database, redis, static path singletons
   database/      Knex migrations and seeds
   modules/       Domain modules: auth, users, profiles, services, bookings
-  pipeline/      Rule based data pipeline with Strategy pattern and DLQ
   routes/        API route composition
   app.js         Express application
   server.js      HTTP server bootstrap
